@@ -1,69 +1,72 @@
 import numpy as np
 
-# --- Définition des fonctions et de leurs dérivées ---
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+# --- Fonctions d'activation ---
+def sigmoid(x): return 1 / (1 + np.exp(-x))
+def sigmoid_deriv(v): return v * (1 - v)
+def tanh(x): return np.tanh(x)
+def tanh_deriv(v): return 1 - v**2
 
-def sigmoid_deriv(v):
-    return v * (1 - v)
+def formater_poids(W, m):
+    """Affiche les poids avec la notation W(m, ij)"""
+    print(f"\n--- Poids de la couche m={m} ---")
+    for i in range(W.shape[0]):
+        for j in range(W.shape[1]):
+            # i+1 et j+1 pour coller à la notation humaine (commence à 1)
+            print(f"W({m}, {i+1}{j+1}) = {W[i, j]:.6f}")
 
-def tanh(x):
-    return np.tanh(x)
+# --- Configuration ---
+print("=== CONFIGURATION DU RÉSEAU RNA ===")
+mode = input("Fonction d'activation (1: Sigmoide, 2: Tanh) : ")
+f, f_deriv = (tanh, tanh_deriv) if mode == "2" else (sigmoid, sigmoid_deriv)
 
-def tanh_deriv(v):
-    return 1 - v**2
+# Saisie dynamique des dimensions
+n_entree = int(input("Nombre d'unités en couche 1 (entrée) : "))
+n_cache = int(input("Nombre d'unités en couche 2 (cachée) : "))
+n_sortie = int(input("Nombre d'unités en couche 3 (sortie) : "))
 
-# --- 1. Configuration dynamique ---
-print("--- Configuration du Réseau ---")
-choice = input("Choisissez la fonction d'activation (1: Sigmoide, 2: Tanh) : ")
-
-if choice == "2":
-    f, f_deriv = tanh, tanh_deriv
-    print("Mode : Tangente Hyperbolique activé.")
+# Initialisation des poids
+init_type = input("Initialisation (1: Ton exemple fixe, 2: Aléatoire) : ")
+if init_type == "1" and n_entree==3 and n_cache==2 and n_sortie==1:
+    W2 = np.array([[0.2, 0.1, 0.1], [0.3, 0.2, 0.3]])
+    W3 = np.array([[0.2, 0.3]])
 else:
-    f, f_deriv = sigmoid, sigmoid_deriv
-    print("Mode : Sigmoïde activé.")
+    # Initialisation aléatoire entre -0.5 et 0.5
+    W2 = np.random.uniform(-0.5, 0.5, (n_cache, n_entree))
+    W3 = np.random.uniform(-0.5, 0.5, (n_sortie, n_cache))
 
-# Saisie du prototype
-print("\n--- Saisie du Prototype u=1 ---")
-inp_str = input("Entrez les valeurs de la couche 1 (ex: 1,0,1) : ")
+# Prototype
+inp_str = input(f"Entrez les {n_entree} valeurs de V(1,i) séparées par virgules : ")
 V1 = np.array([float(x) for x in inp_str.split(",")])
+target_str = input(f"Entrez les {n_sortie} valeurs désirées d(u,i) : ")
+d = np.array([float(x) for x in target_str.split(",")])
+eta = float(input("Pas d'apprentissage (eta) : "))
 
-target = float(input("Entrez la sortie désirée (d) : "))
-eta = float(input("Entrez le pas d'apprentissage (eta, ex: 0.1) : "))
+# --- TRAITEMENT ---
 
-# --- 2. Initialisation des poids (valeurs de ton exemple) ---
-W2 = np.array([
-    [0.2, 0.1, 0.1],
-    [0.3, 0.2, 0.3]
-])
-W3 = np.array([
-    [0.2, 0.3]
-])
-
-# --- 3. Propagation Avant ---
+# 3. Propagation Avant
 net2 = np.dot(W2, V1)
 V2 = f(net2)
-
 net3 = np.dot(W3, V2)
 V3 = f(net3)
 
-# --- 4 & 5. Calcul des Deltas ---
-# Couche de sortie (M=3)
-delta3 = f_deriv(V3) * (target - V3)
+# 4. Erreur en sortie (m=3)
+delta3 = f_deriv(V3) * (d - V3)
 
-# Couche cachée (m=2)
+# 5. Rétropropagation (m=2)
 delta2 = f_deriv(V2) * np.dot(W3.T, delta3)
 
-# --- 6. Mise à jour ---
+# 6. Mise à jour (en une étape)
 W3 += eta * np.outer(delta3, V2)
 W2 += eta * np.outer(delta2, V1)
 
-# --- 7. Affichage précis à 6 chiffres ---
-print("\n--- RÉSULTATS ---")
-print(f"Sortie V(3,1) : {V3[0]:.6f}")
-print(f"Erreur brute  : {(target - V3[0]):.6f}")
-print("\nNouveaux poids W(3,ij) :")
-print(np.round(W3, 6))
-print("\nNouveaux poids W(2,ij) :")
-print(np.round(W2, 6))
+# --- SORTIE AMÉLIORÉE ---
+print("\n" + "="*40)
+print("             RÉSULTATS")
+print("="*40)
+print(f"Sortie obtenue V(3,1) : {V3[0]:.6f}")
+print(f"Erreur (d - V)        : {(d[0] - V3[0]):.6f}")
+
+print("\n--- NOUVELLES VALEURS DES POIDS ---")
+formater_poids(W2, 2)
+formater_poids(W3, 3)
+print("\n" + "="*40)
