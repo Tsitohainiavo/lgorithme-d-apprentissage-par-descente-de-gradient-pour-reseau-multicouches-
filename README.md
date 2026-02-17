@@ -1,35 +1,32 @@
 
-cat << 'EOF' > README.md
 # Apprentissage par Descente de Gradient pour Réseau Multicouches (MLP)
 
 Ce projet implémente un algorithme d'apprentissage pour un réseau de neurones artificiels (RNA) multicouches, codé "from scratch" en Python. Il a été conçu pour illustrer le fonctionnement mathématique de la rétropropagation du gradient (backpropagation).
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 
 - **Architecture Dynamique** : Configuration libre du nombre d'unités pour la couche d'entrée ($m=1$), la couche cachée ($m=2$) et la couche de sortie ($m=3$).
 - **Double Activation** : Support des fonctions **Sigmoïde** et **Tangente Hyperbolique (Tanh)**.
 - **Initialisation Flexible** : Saisie manuelle des poids (idéal pour vérifier des exercices théoriques) ou génération aléatoire.
 - **Sortie Précise** : Affichage des résultats avec 6 chiffres après la virgule, utilisant la notation formelle $W(m, ij)$.
 
-## 🛠️ Installation & Configuration (Ubuntu)
+## Installation & Configuration (Ubuntu)
 
-1. **Cloner le dépôt** :
-   ```bash
-   git clone git@github.com:Tsitohainiavo/lgorithme-d-apprentissage-par-descente-de-gradient-pour-reseau-multicouches-.git
-   cd lgorithme-d-apprentissage-par-descente-de-gradient-pour-reseau-multicouches-
+Cloner le dépôt :
+    Bash
+      git clone git@github.com:Tsitohainiavo/lgorithme-d-apprentissage-par-descente-de-gradient-pour-reseau-multicouches-.git
+      cd lgorithme-d-apprentissage-par-descente-de-gradient-pour-reseau-multicouches-
 
     Créer l'environnement virtuel :
     Bash
-
-python3 -m venv algoRNA
-source algoRNA/bin/activate
+      python3 -m venv algoRNA
+      source algoRNA/bin/activate
 
 Installer les dépendances :
-Bash
-
+   Bash
     pip install numpy
 
-📖 Utilisation
+## Utilisation
 
 Lancez le script principal et suivez les instructions interactives :
 Bash
@@ -44,7 +41,7 @@ Notation utilisée
 
     net(m,i) : somme pondérée reçue par l'unité i de la couche m.
 
-🧮 Algorithme (Les 7 Étapes)
+## Algorithme (Les 7 Étapes)
 
 L'implémentation suit rigoureusement ce cycle :
 
@@ -62,7 +59,7 @@ L'implémentation suit rigoureusement ce cycle :
 
     Itération : Retour à l'étape 2 pour les prototypes suivants.
 
-✒️ Auteur
+**Auteur**
 
 Tsitohainiavo
 EOF
